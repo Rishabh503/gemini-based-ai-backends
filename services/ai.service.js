@@ -91,8 +91,31 @@ const ai = new GoogleGenAI(process.env.GOOGLE_API_KEY);
   }
 }
 
-// Example usage:
-
-
 
 module.exports=generateContent
+module.exports.generateMusicPlaylist=async (prompt)=>{
+    try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+      config: {
+        systemInstruction:"return a good music playlist for the user in indian music and that will be then passed to the frontend give the data in json format only no text also give the same json format  always like u gave once because the frontend is set according to it , yours links dont work right now kindly modify them "
+    }});
+
+    // const rawRespnse=await response.json();
+    console.log(response.candidates[0].content.parts[0].text.replace("```","").replace("```","").replace("json",""))
+    const jsonData=await response.candidates[0].content.parts[0].text.replace("```","").replace("```","").replace("json","")
+try {
+  const parsedData = JSON.parse(jsonData);
+  console.log("yehi hai kya data:",parsedData);
+  return parsedData
+  
+} catch (error) {
+  console.error("Error parsing JSON:", error);
+}
+
+  } catch (error) {
+    console.error("Error generating content:", error);
+    return null;
+  }
+}
